@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -5,21 +6,75 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>NEXORA Voice Studio</title>
+
   <style>
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080a10}
-    *{box-sizing:border-box}
-    #nxApp{position:fixed;inset:0;width:100%;height:100%;border:0;background:#080a10}
-    #loading{position:fixed;inset:0;display:grid;place-items:center;background:#080a10;color:#fff;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;z-index:2}
-    .box{text-align:center}
-    .logo{width:58px;height:58px;border-radius:17px;background:linear-gradient(135deg,#8b5cf6,#5b21b6);
-      display:grid;place-items:center;margin:0 auto 13px;font-weight:900;font-size:21px;letter-spacing:-2px}
-    .muted{color:#98a2b3;font-size:12px;margin-top:7px}
-    #err{display:none;max-width:520px;padding:16px;border:1px solid #5b2430;background:#281218;
-      border-radius:12px;color:#ff9da8;line-height:1.45}
+    html,body {
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#080a10;
+    }
+
+    * { box-sizing:border-box; }
+
+    #nxApp {
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      border:0;
+      background:#080a10;
+    }
+
+    #loading {
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      background:#080a10;
+      color:#fff;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      z-index:2;
+    }
+
+    .box { text-align:center; }
+
+    .logo {
+      width:58px;
+      height:58px;
+      border-radius:17px;
+      background:linear-gradient(135deg,#8b5cf6,#5b21b6);
+      display:grid;
+      place-items:center;
+      margin:0 auto 13px;
+      font-weight:900;
+      font-size:21px;
+      letter-spacing:-2px;
+    }
+
+    .muted {
+      color:#98a2b3;
+      font-size:12px;
+      margin-top:7px;
+    }
+
+    #err {
+      display:none;
+      max-width:520px;
+      padding:16px;
+      margin-top:15px;
+      border:1px solid #5b2430;
+      background:#281218;
+      border-radius:12px;
+      color:#ff9da8;
+      line-height:1.45;
+    }
   </style>
 </head>
+
 <body>
+
   <div id="loading">
     <div class="box">
       <div class="logo">NX</div>
@@ -29,45 +84,62 @@
     </div>
   </div>
 
-  <iframe id="nxApp" title="NEXORA Voice Studio"
+  <iframe
+    id="nxApp"
+    title="NEXORA Voice Studio"
     allow="autoplay; clipboard-read; clipboard-write"
-    referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    referrerpolicy="strict-origin-when-cross-origin">
+  </iframe>
 
-  <script src="config.js"></script>
   <script>
-    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('contextmenu', e => {
+      e.preventDefault();
+    });
+
     document.addEventListener('keydown', e => {
       const k = e.key.toLowerCase();
-      if (e.key === 'F12' ||
-          (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k)) ||
-          (e.ctrlKey && ['u','s'].includes(k))) {
+
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k)) ||
+        (e.ctrlKey && ['u','s'].includes(k))
+      ) {
         e.preventDefault();
         e.stopPropagation();
       }
     }, true);
 
-    const url = String((window.NEXORA_CONFIG && window.NEXORA_CONFIG.backendUrl) || '')
-      .trim().replace(/\/$/, '');
+    // CONEXIÓN OFICIAL DE NEXORA
+    const BACKEND_URL =
+      'https://script.google.com/macros/s/AKfycbw_4ZAPu9fkvmRwWSLqFFFH6l4QBilSDtK2lGs4y_R_P8vOivExxrTObb5r7J4r2E1PzA/exec';
 
     const frame = document.getElementById('nxApp');
     const loading = document.getElementById('loading');
     const err = document.getElementById('err');
 
-    if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) {
+    function showError(message) {
       err.style.display = 'block';
-      err.textContent = 'NEXORA todavía no está conectado. Revisa config.js.';
+      err.textContent = message;
+    }
+
+    if (!BACKEND_URL.endsWith('/exec')) {
+      showError('La dirección de Apps Script no es válida.');
     } else {
-      frame.src = url;
+      frame.src = BACKEND_URL;
+
       frame.addEventListener('load', () => {
-        setTimeout(() => { loading.style.display = 'none'; }, 250);
+        loading.style.display = 'none';
       });
+
       setTimeout(() => {
         if (loading.style.display !== 'none') {
-          err.style.display = 'block';
-          err.textContent = 'El servicio está tardando en cargar. Actualiza la página en unos segundos.';
+          showError(
+            'NEXORA está tardando en cargar. Comprueba tu conexión e inténtalo nuevamente.'
+          );
         }
-      }, 15000);
+      }, 20000);
     }
   </script>
+
 </body>
 </html>
